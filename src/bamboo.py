@@ -214,4 +214,5 @@ def gradient_descent_step(theta0, theta1, X, Y, learning_rate):
     new_theta0 = theta0 - learning_rate * theta0_gradient
     new_theta1 = theta1 - learning_rate * theta1_gradient
 
+
     return new_theta0, new_theta1
