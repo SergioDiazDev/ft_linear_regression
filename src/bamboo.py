@@ -1,7 +1,10 @@
+'''This is a rebuilt version of the pandas library for 42AI students'''
+
 import math
 import pandas as pd
 
 def count(series):
+    '''Returns the number of elements in the Series'''
     cnt = 0
     for elem in series:
         if not math.isnan(elem):
@@ -9,6 +12,7 @@ def count(series):
     return cnt
 
 def min(series):
+    '''Returns the minimum value of the Series'''
     min_val = series[0]
     for elem in series:
         if not math.isnan(elem):
@@ -17,6 +21,7 @@ def min(series):
     return min_val
 
 def max(series):
+    '''Returns the maximum value of the Series'''
     max_val = series[0]
     for elem in series:
         if not math.isnan(elem):
@@ -25,6 +30,7 @@ def max(series):
     return max_val
 
 def mean(series):
+    '''Returns the mean of the Series'''
     total = 0
     cnt = 0
     for elem in series:
@@ -37,18 +43,21 @@ def mean(series):
     return total / cnt
 
 def variance(series, ddof=1):
+    '''Returns the variance of the Series'''
     series = series.dropna()
     if series.empty:
         return float('NaN')
     return ((series - mean(series))**2).sum() / (count(series) - ddof)
 
 def std(series, ddof=1):
+    '''Returns the standard deviation of the Series'''
     series = series.dropna()
     if series.empty:
         return float('NaN')
     return math.sqrt(variance(series, ddof))
 
 def analyse_col(series, ddof=1, percentiles=[0,25, 0,50, 0,75]):
+    '''Returns a Series with the statistical description of the Series'''
     if series.empty:
         print(f'Error: Empty column {series.name}')
         exit(-1)
@@ -68,6 +77,7 @@ def analyse_col(series, ddof=1, percentiles=[0,25, 0,50, 0,75]):
     return pd.Series(data)
 
 def describe(df, ddof=1, percentiles=[0.25, 0.50, 0.75]):
+    '''Returns a DataFrame with the statistical description of the DataFrame'''
 
     results = {}
 
@@ -87,13 +97,9 @@ def get_numeric_columns(df):
     return num_cols.loc[:, num_cols.columns != 'Index']
 
 def calcular_percentil(data, percentile=0.5):
-    '''
-
-    '''
-
+    '''Returns the value of the percentile'''
 
     data_sorted = list(data.sort_values().dropna())
-
 
     n = len(data_sorted)
     if not n:
@@ -115,6 +121,7 @@ def calcular_percentil(data, percentile=0.5):
         return (1 - interpolation) * data_sorted[low_index] + interpolation * data_sorted[high_index]
 
 def normalizer(df):
+    '''Returns the normalized DataFrame'''
     normalized_df = df.copy()
     for col in normalized_df.columns:
         if normalized_df[col].dtype != 'float64':
@@ -197,3 +204,14 @@ def StandardScaler(df):
         scaled_df[col] = (df[col] - means[col]) / stds[col]
 
     return scaled_df
+
+def gradient_descent_step(theta0, theta1, X, Y, learning_rate):
+    '''Returns the updated theta0 and theta1 values'''
+    m = len(X)
+    theta0_gradient = sum(theta0 + theta1 * X - Y) / m
+    theta1_gradient = sum((theta0 + theta1 * X - Y) * X) / m
+
+    new_theta0 = theta0 - learning_rate * theta0_gradient
+    new_theta1 = theta1 - learning_rate * theta1_gradient
+
+    return new_theta0, new_theta1
