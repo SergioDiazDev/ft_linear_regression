@@ -1,0 +1,199 @@
+import math
+import pandas as pd
+
+def count(series):
+    cnt = 0
+    for elem in series:
+        if not math.isnan(elem):
+            cnt += 1
+    return cnt
+
+def min(series):
+    min_val = series[0]
+    for elem in series:
+        if not math.isnan(elem):
+            if elem < min_val:
+                min_val = elem
+    return min_val
+
+def max(series):
+    max_val = series[0]
+    for elem in series:
+        if not math.isnan(elem):
+            if elem > max_val:
+                max_val = elem
+    return max_val
+
+def mean(series):
+    total = 0
+    cnt = 0
+    for elem in series:
+        if not math.isnan(elem):
+            total += elem
+            cnt += 1
+
+    if cnt == 0:
+        return float('NaN')
+    return total / cnt
+
+def variance(series, ddof=1):
+    series = series.dropna()
+    if series.empty:
+        return float('NaN')
+    return ((series - mean(series))**2).sum() / (count(series) - ddof)
+
+def std(series, ddof=1):
+    series = series.dropna()
+    if series.empty:
+        return float('NaN')
+    return math.sqrt(variance(series, ddof))
+
+def analyse_col(series, ddof=1, percentiles=[0,25, 0,50, 0,75]):
+    if series.empty:
+        print(f'Error: Empty column {series.name}')
+        exit(-1)
+
+    data = {
+        'count': count(series),
+        'mean': mean(series),
+        'std': std(series, ddof),
+        'min': min(series),
+    }
+
+    for p in percentiles:
+        data[f"{round(p*100)}%"] = calcular_percentil(series, p)
+    
+    data['max'] = max(series)
+
+    return pd.Series(data)
+
+def describe(df, ddof=1, percentiles=[0.25, 0.50, 0.75]):
+
+    results = {}
+
+    if 0.5 not in percentiles:
+        percentiles.append(0.5)
+
+    for i, col_name in enumerate(df):
+        results[col_name] = analyse_col(df[col_name], ddof, percentiles)
+    return pd.DataFrame(results)
+
+def get_numeric_columns(df):
+    '''Returns all numerical "features"'''
+    num_cols = df.select_dtypes('number')
+    # Drop empty columns
+    num_cols = num_cols.dropna(axis=1, how='all')
+    # Exclude 'Index' column
+    return num_cols.loc[:, num_cols.columns != 'Index']
+
+def calcular_percentil(data, percentile=0.5):
+    '''
+
+    '''
+
+
+    data_sorted = list(data.sort_values().dropna())
+
+
+    n = len(data_sorted)
+    if not n:
+        return float('NaN')
+    index = (percentile) * (n - 1)
+   
+    #print(index)
+    if index.is_integer():
+        # Si el índice calculado es un número entero
+        # print(data_sorted[int(index)])
+        # print(data_sorted[int(index) - 1])
+        return data_sorted[int(index)]
+    else:
+        # Interpolación lineal si el índice no es entero
+        low_index = int(index)
+        high_index = low_index + 1
+        interpolation = index - low_index
+        # print("low: ", data_sorted[low_index - 1], " hight: ", data_sorted[high_index])
+        return (1 - interpolation) * data_sorted[low_index] + interpolation * data_sorted[high_index]
+
+def normalizer(df):
+    normalized_df = df.copy()
+    for col in normalized_df.columns:
+        if normalized_df[col].dtype != 'float64':
+            continue
+        # Obtener el mínimo y máximo de la columna actual
+        col_min = normalized_df[col].min()
+        col_max = normalized_df[col].max()
+        
+        # Aplicar la normalización a la columna
+        normalized_df[col] = (normalized_df[col] - col_min) / (col_max - col_min)
+    
+    return normalized_df
+
+def cov(df):
+    '''Returns the correlation matrix'''
+    df = df.dropna()
+    df = get_numeric_columns(df)
+
+    means = df.apply(lambda x: mean(x))
+
+    # Inicializar un DataFrame para la matriz de covarianza
+    cov_matrix = pd.DataFrame(index=df.columns, columns=df.columns)
+
+    # Calcular la matriz de covarianza
+    for col1 in df.columns:
+        for col2 in df.columns:
+            cov_matrix.loc[col1, col2] = mean((df[col1] - means[col1]) * (df[col2] - means[col2]))
+    return cov_matrix
+
+def corr(df):
+    '''Returns the covariance matrix'''
+    df = df.dropna()
+    df = get_numeric_columns(df)
+
+    stds = df.apply(lambda x: std(x, ddof=0))
+
+    # Inicializar un DataFrame para la matriz de covarianza
+    cov_matrix = cov(df)
+
+    # Inicializar un DataFrame para la matriz de correlacion
+    corr_matrix = pd.DataFrame(index=df.columns, columns=df.columns)
+
+    # Calcular la matriz de correlación
+    for col1 in df.columns:
+        for col2 in df.columns:
+            corr_matrix.loc[col1, col2] = cov_matrix.loc[col1, col2] / (stds[col1] * stds[col2])
+
+    return corr_matrix
+
+def MinMaxScaler(df):
+    '''Returns the MinMax scaled DataFrame'''
+    df = df.dropna()
+    df = get_numeric_columns(df)
+
+    min_values = df.apply(lambda x: min(x))
+    max_values = df.apply(lambda x: max(x))
+
+    # Inicializar un DataFrame para almacenar los valores escalados
+    scaled_df = pd.DataFrame(index=df.index, columns=df.columns)
+
+    # Escalar los valores
+    for col in df.columns:
+        scaled_df[col] = (df[col] - min_values[col]) / (max_values[col] - min_values[col])
+
+    return scaled_df
+
+def StandardScaler(df):
+    '''Returns the Standard scaled DataFrame'''
+    df = df.dropna()
+    df = get_numeric_columns(df)
+
+    means = df.apply(lambda x: mean(x))
+    stds = df.apply(lambda x: std(x, ddof=0))
+
+    # Inicializar un DataFrame para almacenar los valores escalados
+    scaled_df = pd.DataFrame(index=df.index, columns=df.columns)
+
+    # Escalar los valores
+    for col in df.columns:
+        scaled_df[col] = (df[col] - means[col]) / stds[col]
+
+    return scaled_df
