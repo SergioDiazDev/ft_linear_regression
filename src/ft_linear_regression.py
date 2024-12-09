@@ -1,5 +1,6 @@
 import bamboo as bb
 import pandas as pd
+import pickle as pkl
 import matplotlib.pyplot as plt
 
 # Load the data
@@ -26,6 +27,7 @@ theta0_unscaled = bb.mean(Y) - theta1_unscaled * bb.mean(X)
 #Printing
 print(f"Theta0: {theta0}")
 print(f"Theta1: {theta1}")
+print(f"cost: {pd.Series((Y_scaler - (theta0 + theta1 * X_scaler))**2).mean()}")
 
 print(f"Price for 0 km: {theta0_unscaled + theta1_unscaled * 0}")
 
@@ -67,8 +69,6 @@ theta0_unscaled = bb.mean(Y) - theta1_unscaled * bb.mean(X)
 print(f"Theta0: {theta0}")
 print(f"Theta1: {theta1}")
 
-print(f"Price for 0 km: {theta0_unscaled + theta1_unscaled * 0}")
-
 # Visualización de los resultados
 
 # Graficar la evolución de los parámetros (theta0 y theta1)
@@ -93,3 +93,9 @@ plt.tight_layout()
 
 # Mostrar los gráficos
 plt.show()
+
+# Guardar el modelo
+model = {'theta0': theta0, 'theta1': theta1}
+with open('model.pkl', mode='wb') as file:
+    pkl.dump(model, file)
+print("Modelo exportado a model.pkl")
