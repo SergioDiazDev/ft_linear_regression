@@ -47,6 +47,8 @@ def variance(series, ddof=1):
     series = series.dropna()
     if series.empty:
         return float('NaN')
+    if count(series) - ddof == 0:
+        return 0
     return ((series - mean(series))**2).sum() / (count(series) - ddof)
 
 def std(series, ddof=1):
@@ -214,3 +216,11 @@ def gradient_descent_step(theta0, theta1, X, Y, learning_rate):
 
 
     return new_theta0, new_theta1
+
+def is_numeric(series):
+    '''Returns True if the Series is numeric'''
+    return series.dtype == 'float64' or series.dtype == 'int64'
+
+def mse(y_true, y_pred):
+    '''Returns the Mean Squared Error'''
+    return sum((y_true - y_pred)**2) / len(y_true)

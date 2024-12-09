@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 
 # Load the data
 df = pd.read_csv('../datasets/data.csv')
-#print(bb.describe(df))
 
 df_scaler = bb.StandardScaler(df)
 
