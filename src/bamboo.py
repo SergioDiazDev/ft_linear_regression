@@ -108,16 +108,14 @@ def calcular_percentil(data, percentile=0.5):
    
     #print(index)
     if index.is_integer():
-        # Si el índice calculado es un número entero
-        # print(data_sorted[int(index)])
-        # print(data_sorted[int(index) - 1])
+        # If the calculated index is an integer
         return data_sorted[int(index)]
     else:
-        # Interpolación lineal si el índice no es entero
+        # Linear interpolation if the index is not an integer
         low_index = int(index)
         high_index = low_index + 1
         interpolation = index - low_index
-        # print("low: ", data_sorted[low_index - 1], " hight: ", data_sorted[high_index])
+
         return (1 - interpolation) * data_sorted[low_index] + interpolation * data_sorted[high_index]
 
 def normalizer(df):
@@ -126,11 +124,11 @@ def normalizer(df):
     for col in normalized_df.columns:
         if normalized_df[col].dtype != 'float64':
             continue
-        # Obtener el mínimo y máximo de la columna actual
+        # Get the minimum and maximum of the current column
         col_min = normalized_df[col].min()
         col_max = normalized_df[col].max()
-        
-        # Aplicar la normalización a la columna
+
+        # Apply normalization to the column
         normalized_df[col] = (normalized_df[col] - col_min) / (col_max - col_min)
     
     return normalized_df
@@ -142,10 +140,10 @@ def cov(df):
 
     means = df.apply(lambda x: mean(x))
 
-    # Inicializar un DataFrame para la matriz de covarianza
+    # Initializing a DataFrame for the covariance matrix
     cov_matrix = pd.DataFrame(index=df.columns, columns=df.columns)
 
-    # Calcular la matriz de covarianza
+    # Calculating the covariance matrix
     for col1 in df.columns:
         for col2 in df.columns:
             cov_matrix.loc[col1, col2] = mean((df[col1] - means[col1]) * (df[col2] - means[col2]))
@@ -158,13 +156,13 @@ def corr(df):
 
     stds = df.apply(lambda x: std(x, ddof=0))
 
-    # Inicializar un DataFrame para la matriz de covarianza
+    # Initializing a DataFrame for the covariance matrix
     cov_matrix = cov(df)
 
-    # Inicializar un DataFrame para la matriz de correlacion
+    # Initializing a DataFrame for the correlation matrix
     corr_matrix = pd.DataFrame(index=df.columns, columns=df.columns)
 
-    # Calcular la matriz de correlación
+    # Calculating the correlation matrix
     for col1 in df.columns:
         for col2 in df.columns:
             corr_matrix.loc[col1, col2] = cov_matrix.loc[col1, col2] / (stds[col1] * stds[col2])
@@ -179,10 +177,10 @@ def MinMaxScaler(df):
     min_values = df.apply(lambda x: min(x))
     max_values = df.apply(lambda x: max(x))
 
-    # Inicializar un DataFrame para almacenar los valores escalados
+    # Initializing a DataFrame to store the scaled values
     scaled_df = pd.DataFrame(index=df.index, columns=df.columns)
 
-    # Escalar los valores
+    # Scaling the values
     for col in df.columns:
         scaled_df[col] = (df[col] - min_values[col]) / (max_values[col] - min_values[col])
 
@@ -196,10 +194,10 @@ def StandardScaler(df):
     means = df.apply(lambda x: mean(x))
     stds = df.apply(lambda x: std(x, ddof=0))
 
-    # Inicializar un DataFrame para almacenar los valores escalados
+    # Initializing a DataFrame to store the scaled values
     scaled_df = pd.DataFrame(index=df.index, columns=df.columns)
 
-    # Escalar los valores
+    # Scaling the values
     for col in df.columns:
         scaled_df[col] = (df[col] - means[col]) / stds[col]
 
