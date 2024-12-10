@@ -98,14 +98,12 @@ def gradient_descent_step(X, Y, X_scaler, Y_scaler, epochs, learning_rate, graph
 	print("---------------")
 
 	#Path to save the model
-	# Ruta para guardar el modelo
-	script_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio del script
-	models_dir = os.path.join(script_dir, 'models')         # Carpeta 'models'
+	script_dir = os.path.dirname(os.path.abspath(__file__))
+	models_dir = os.path.join(script_dir, 'models')
 
-	# Crear el directorio si no existe
+	# Create the directory if it does not exist
 	os.makedirs(models_dir, exist_ok=True)
 
-	# Ruta completa del archivo
 	model_path = os.path.join(models_dir, model_name)
 
 	#Export the model
@@ -151,10 +149,10 @@ def gradient_descent_step(X, Y, X_scaler, Y_scaler, epochs, learning_rate, graph
 		plt.show()
 
 def main():
-	# Obtener la ruta del script actual
+	# Get the directory of the script
 	script_dir = os.path.dirname(os.path.abspath(__file__))
 
-	# Construir la ruta del archivo por defecto
+	# Default datafile
 	default_datafile = os.path.join(script_dir, 'datasets', 'data.csv')
 
 	# Parse the arguments
@@ -202,8 +200,6 @@ def main():
 
 	#Regression with degradient descent
 	gradient_descent_step(X, Y, X_scaler, Y_scaler, args.epochs, args.learning_rate, args.graph, args.model)
-	
-
 
 if __name__ == '__main__':
 	main()
