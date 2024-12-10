@@ -58,7 +58,7 @@ def gradient_descent_step(X, Y, X_scaler, Y_scaler, epochs, learning_rate, graph
 	theta1_history = []
 	cost_history = []
 
-	print("Gradient Descent")
+	print(f"Gradient Descent: epochs={epochs}, learning_rate={learning_rate}")
 	print("---------------")
 	for i in range(epochs):
 		theta0, theta1 = bb.gradient_descent_step(theta0, theta1, X_scaler, Y_scaler, learning_rate)

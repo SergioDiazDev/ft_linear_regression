@@ -1,6 +1,5 @@
 import argparse
 import pickle as pkl
-import pandas as pd
 
 # Validating function to ensure the value is positive
 def positive_int(value):
