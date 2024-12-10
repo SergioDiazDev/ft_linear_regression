@@ -3,6 +3,7 @@ import argparse
 import pandas as pd
 import bamboo as bb
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 import pickle as pkl
 
 def linear_regression(X, Y, X_scaler, Y_scaler):
@@ -100,27 +101,39 @@ def gradient_descent_step(X, Y, X_scaler, Y_scaler, epochs, learning_rate, graph
 	with open(model_name, mode='wb') as file:
 		pkl.dump(model, file)
 	print(f"Model exported to {model_name}")
+	# Graphs
 	if graph:
-		# Visualización de los resultados
-		# Graficar la evolución de los parámetros (theta0 y theta1)
-		plt.figure(figsize=(12, 6))
+		# Create the figure
+		plt.figure(figsize=(20, 15))
+		gs = gridspec.GridSpec(2, 2, height_ratios=[1, 0.7], width_ratios=[1, 1])
 
-		# Subgráfico 1: Evolución de theta0 y theta1
-		plt.subplot(1, 2, 1)
+		# Subgraph 1: Evolution of the parameters
+		plt.subplot(gs[0, 0])
 		plt.plot(range(epochs), theta0_history, label=r'theta_0', color='blue')
 		plt.plot(range(epochs), theta1_history, label=r'theta_1', color='red')
 		plt.xlabel('Epoch')
 		plt.ylabel('Parameter Value')
-		plt.title('Evolución de theta_0 y theta_1 durante el Descenso de Gradiente')
+		plt.title('Evolution of the Parameters (theta0 and theta1) in the Gradient Descent')
 		plt.legend()
 
-		# Subgráfico 2: Evolución de la función de coste
-		plt.subplot(1, 2, 2)
+		# Subgraph 2: Evolution of the cost function
+		plt.subplot(gs[0, 1])
 		plt.plot(range(epochs), cost_history, color='green')
 		plt.xlabel('Epoch')
 		plt.ylabel('Cost')
-		plt.title('Evolución de la Función de Coste')
+		plt.title('Evolution of the Cost Function')
 		plt.tight_layout()
+
+		# Subgraph 3: Real data and regression
+		plt.subplot(gs[1, :])
+		plt.scatter(X, Y, color='blue', label='Real data')
+		plt.plot(X, theta0_unscaled + theta1_unscaled * X, color='red', label='Regression')
+		plt.xlabel('Kilometers')
+		plt.ylabel('Price')
+		plt.title('Linear Regression')
+
+		# Margins
+		plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.1)
 
 		# Mostrar los gráficos
 		plt.show()
