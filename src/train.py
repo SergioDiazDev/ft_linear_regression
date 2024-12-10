@@ -5,6 +5,7 @@ import bamboo as bb
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import pickle as pkl
+import os
 
 def linear_regression(X, Y, X_scaler, Y_scaler):
 	#Regression
@@ -96,11 +97,22 @@ def gradient_descent_step(X, Y, X_scaler, Y_scaler, epochs, learning_rate, graph
 	print(f"cost: {pd.Series((Y - (theta0_unscaled + theta1_unscaled * X))**2).mean()}")
 	print("---------------")
 
+	#Path to save the model
+	# Ruta para guardar el modelo
+	script_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio del script
+	models_dir = os.path.join(script_dir, 'models')         # Carpeta 'models'
+
+	# Crear el directorio si no existe
+	os.makedirs(models_dir, exist_ok=True)
+
+	# Ruta completa del archivo
+	model_path = os.path.join(models_dir, model_name)
+
 	#Export the model
 	model = {'theta0': theta0_unscaled, 'theta1': theta1_unscaled}
-	with open(model_name, mode='wb') as file:
+	with open(model_path, mode='wb') as file:
 		pkl.dump(model, file)
-	print(f"Model exported to {model_name}")
+	print(f"Model exported to {model_path}")
 	# Graphs
 	if graph:
 		# Create the figure
@@ -139,10 +151,16 @@ def gradient_descent_step(X, Y, X_scaler, Y_scaler, epochs, learning_rate, graph
 		plt.show()
 
 def main():
+	# Obtener la ruta del script actual
+	script_dir = os.path.dirname(os.path.abspath(__file__))
+
+	# Construir la ruta del archivo por defecto
+	default_datafile = os.path.join(script_dir, 'datasets', 'data.csv')
+
 	# Parse the arguments
 	parser = argparse.ArgumentParser(description='Train a linear regression model')
 	parser.add_argument('datafile', help='File name of the csv data',
-						nargs='?', default='../datasets/data.csv')
+						nargs='?', default=default_datafile)
 	parser.add_argument('-c', '--compare', action='store_true', default=False,
 						help='Compare Regression with degradient descent')
 	parser.add_argument('-e', '--epochs', type=int, default=15,
