@@ -1,5 +1,6 @@
 import argparse
 import pickle as pkl
+import os
 
 # Validating function to ensure the value is positive
 def positive_int(value):
@@ -9,12 +10,15 @@ def positive_int(value):
 	return int(value)
 
 def main():
+	#Path to the model
+	model_path = os.path.join(os.path.dirname(__file__), 'models', 'model.pkl')
+
 	# Parse the arguments
 	parser = argparse.ArgumentParser(description='Predict the price of a car')
 	parser.add_argument('Kilometers', type=positive_int
 					 	,help='Kilometers of the car', )
 	parser.add_argument('-m', '--model', help='File name of the model',
-						 default='model.pkl')
+						 default=model_path)
 	args = parser.parse_args()
 
 	# Load the model
