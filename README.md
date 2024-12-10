@@ -15,6 +15,6 @@
 
 -h: For more Info
 
-	(venv)$ python3 src/predict.py 10000 -m models/model.pkl
+	(venv)$ python3 src/predict.py 10000 -m src/models/model.pkl
 
 -h: For more Info

@@ -1,3 +1,6 @@
+
+all: venv
+
 #Create venv
 venv:
 	python3 -m venv src/venv
@@ -5,8 +8,9 @@ venv:
 	@echo "Virtual environment created"
 	@echo "To activate the virtual environment, run: source src/venv/bin/activate"
 	@echo "To install the dependencies, run: make install"
-
+#Install dependencies
 install:
 	pip install -r src/requirements.txt
 	@echo "Dependencies installed"
 
+.phony: all venv install
